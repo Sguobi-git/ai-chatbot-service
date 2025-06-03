@@ -1,0 +1,7 @@
+Flask
+requests
+pandas
+sentence-transformers
+torch # sentence-transformers depends on torch
+Flask-Cors # If you added CORS
+gunicorn
