@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Powered Show Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 1.8em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .container {
+            display: flex;
+            flex-grow: 1;
+            padding: 20px;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+        }
+        .sidebar {
+            width: 250px;
+            padding-right: 20px;
+            border-right: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .sidebar h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .sidebar button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar button:hover {
+            background-color: #2980b9;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .dashboard-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .dashboard-section h3 {
+            color: #34495e;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 30px;
+            margin-top: 10px;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%; /* Initial width */
+            background-color: #2ecc71;
+            text-align: center;
+            color: white;
+            line-height: 30px;
+            transition: width 0.5s ease-in-out;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background-color: #eef;
+            color: #34495e;
+            font-weight: bold;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f6f6f6;
+        }
+        .action-buttons button {
+            padding: 8px 12px;
+            margin-right: 5px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .action-buttons button:hover {
+            background-color: #4cae4c;
+        }
+        .chatbot-section {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            flex-grow: 1; /* Take remaining vertical space */
+            display: flex;
+            flex-direction: column;
+        }
+        .chatbot-section h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            color: #34495e;
+        }
+        .chat-history {
+            flex-grow: 1;
+            border: 1px solid #ccc;
+            padding: 15px;
+            overflow-y: auto;
+            height: 250px; /* Fixed height for chat scroll */
+            margin-bottom: 15px;
+            background-color: #fff;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        .user-message {
+            align-self: flex-end;
+            background-color: #dcf8c6; /* Light green */
+            color: #333;
+        }
+        .ai-message {
+            align-self: flex-start;
+            background-color: #e9e9eb; /* Light grey */
+            color: #333;
+        }
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #2c3e50;
+            color: white;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        AI Powered Show Management Dashboard
+        <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 0.6em;">
+            Demo Version
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Show Selection</h2>
+            <button onclick="loadShow('Coffee Fest')">Coffee Fest</button>
+            <button onclick="loadShow('Sof Week')">Sof Week</button>
+            
+            <h2>Navigation</h2>
+            <button onclick="loadData('booth_checks_and_pictures')">Booth Checks</button>
+            <button onclick="loadData('show_site_orders')">Show Site Orders</button>
+            <button onclick="loadData('marshalling_yard')">Marshalling Yard</button>
+            </aside>
+
+        <main class="main-content">
+            <div class="dashboard-section">
+                <h3>Overall Show Progress (<span id="currentShowName">Select a Show</span>)</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="showProgressBar" style="width: 0%;">0%</div>
+                </div>
+            </div>
+
+            <div class="dashboard-section" id="dataDisplaySection">
+                <h3>Data View (<span id="currentDataTable">Select Data Type</span>)</h3>
+                <div id="dataTableContainer">
+                    <p>Click a navigation button on the left to load data.</p>
+                </div>
+            </div>
+
+            <div class="chatbot-section">
+                <h3>AI Chatbot</h3>
+                <div class="chat-history" id="chatHistory">
+                    <div class="ai-message chat-message">Hello! Ask me anything about your show data.</div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="questionInput" placeholder="Ask a question..." onkeypress="if(event.keyCode==13) sendQuestionToAI()">
+                    <button onclick="sendQuestionToAI()">Send</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        &copy; 2025 Your Company Name. Powered by AI and Google Cloud.
+    </footer>
+
+    <script>
+        // --- Configuration ---
+        const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxyKvkq7pIv1V3Ok4AuXI8bYBGqSIqu2vjS_1OKeaymHRFV9HfSoJTk04p3gN094yQzg/exec"; // e.g., https://script.google.com/macros/s/AKfyc.../exec
+        const CLOUD_RUN_AI_BACKEND_URL = "https://ai-chatbot-service-94128419367.us-central1.run.app/ask"; // e.g., https://ai-chatbot-service-xxxxxxx-uc.a.run.app/ask
+
+        let currentActiveSheet = ''; // To keep track of which sheet data is currently displayed
+        let currentShowName = ''; // To keep track of the selected show
+
+        // --- Helper Function to Display Messages ---
+        function addMessageToChat(message, sender) {
+            const chatHistory = document.getElementById('chatHistory');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message', `${sender}-message`);
+            messageDiv.textContent = message;
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight; // Scroll to bottom
+        }
+
+        // --- Fetch Data Function ---
+        async function fetchSheetData(sheetName) {
+            try {
+                const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error(`Error fetching data from sheet "${sheetName}":`, error);
+                alert(`Failed to load data for "${sheetName}". Please check the Google Sheet and Apps Script deployment. Error: ${error.message}`);
+                return null;
+            }
+        }
+
+        // --- Update Data Function (doPost) ---
+        async function updateSheetData(sheetName, rowIndex, columnName, newValue) {
+            try {
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain' // Apps Script doPost expects plain text for JSON
+                    },
+                    body: JSON.stringify({
+                        sheet: sheetName,
+                        rowId: rowIndex, // 0-indexed data row (after headers)
+                        columnName: columnName,
+                        newValue: newValue
+                    })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.success) {
+                    console.log("Update successful:", result.message);
+                    // Re-load data for the current active sheet to show changes
+                    if (currentActiveSheet) {
+                        loadData(currentActiveSheet);
+                    }
+                    // If this update affects show progress, re-load that too
+                    if (sheetName === 'show_site_orders' || sheetName === 'booth_checks_and_pictures') {
+                        if (currentShowName) {
+                            fetchAndDisplayShowProgress(currentShowName);
+                        }
+                    }
+                } else {
+                    console.error("Update failed:", result.message);
+                    alert("Failed to update data: " + result.message);
+                }
+            } catch (error) {
+                console.error("Error updating data:", error);
+                alert("An error occurred during data update: " + error.message);
+            }
+        }
+
+        // --- Display Data in Table ---
+        function displayDataInTable(data, sheetName) {
+            const container = document.getElementById('dataTableContainer');
+            if (!data || data.length === 0) {
+                container.innerHTML = `<p>No data available for ${sheetName}.</p>`;
+                return;
+            }
+
+            const headers = data[0];
+            const rows = data.slice(1); // Data rows start from the second element
+
+            let tableHTML = '<table><thead><tr>';
+            headers.forEach(header => {
+                tableHTML += `<th>${header}</th>`;
+            });
+            tableHTML += '<th>Actions</th></tr></thead><tbody>'; // Add an Actions column
+
+            rows.forEach((row, rowIndex) => {
+                tableHTML += '<tr>';
+                row.forEach(cell => {
+                    tableHTML += `<td>${cell !== null ? cell : ''}</td>`;
+                });
+                // Add action buttons based on sheet type
+                tableHTML += '<td class="action-buttons">';
+                if (sheetName === 'show_site_orders') {
+                    tableHTML += `<button onclick="updateStatus('${sheetName}', ${rowIndex}, 'Status', 'In Process')">Process</button>`;
+                    tableHTML += `<button onclick="updateStatus('${sheetName}', ${rowIndex}, 'Status', 'Delivered')">Deliver</button>`;
+                } else if (sheetName === 'booth_checks_and_pictures') {
+                    tableHTML += `<button onclick="updateStatus('${sheetName}', ${rowIndex}, 'Status', 'Complete')">Mark Complete</button>`;
+                }
+                tableHTML += '</td></tr>';
+            });
+            tableHTML += '</tbody></table>';
+            container.innerHTML = tableHTML;
+        }
+
+        // --- Wrapper for Update Status Button ---
+        function updateStatus(sheetName, rowIndex, columnName, newStatus) {
+            updateSheetData(sheetName, rowIndex, columnName, newStatus);
+        }
+
+        // --- Load Data into UI ---
+        async function loadData(sheetName) {
+            currentActiveSheet = sheetName;
+            document.getElementById('currentDataTable').textContent = sheetName;
+            document.getElementById('dataTableContainer').innerHTML = '<p>Loading data...</p>';
+            const data = await fetchSheetData(sheetName);
+            if (data) {
+                displayDataInTable(data, sheetName);
+            }
+        }
+
+        // --- Fetch and Display Show Progress ---
+        async function fetchAndDisplayShowProgress(showName) {
+            currentShowName = showName;
+            document.getElementById('currentShowName').textContent = showName;
+            const showsData = await fetchSheetData('shows'); // Assuming a 'Shows' sheet exists
+            if (showsData && showsData.length > 1) {
+                const headers = showsData[0];
+                const progressColIndex = headers.indexOf('OverallProgress');
+                const showNameColIndex = headers.indexOf('ShowName'); // Assuming a ShowName column
+
+                if (progressColIndex !== -1 && showNameColIndex !== -1) {
+                    const targetShowRow = showsData.slice(1).find(row => row[showNameColIndex] === showName);
+                    if (targetShowRow) {
+                        let progress = parseFloat(targetShowRow[progressColIndex]) || 0;
+                        const progressBar = document.getElementById('showProgressBar');
+                        progressBar.style.width = `${progress}%`;
+                        progressBar.textContent = `${progress}%`;
+                        progressBar.style.backgroundColor = progress < 50 ? '#f39c12' : (progress < 100 ? '#2ecc71' : '#27ae60'); // Color change
+                    } else {
+                        console.warn(`Show '${showName}' not found in 'Shows' sheet.`);
+                        document.getElementById('showProgressBar').style.width = '0%';
+                        document.getElementById('showProgressBar').textContent = 'N/A';
+                    }
+                } else {
+                    console.warn("Could not find 'OverallProgress' or 'ShowName' column in 'Shows' sheet.");
+                    document.getElementById('showProgressBar').style.width = '0%';
+                    document.getElementById('showProgressBar').textContent = 'N/A';
+                }
+            } else {
+                document.getElementById('showProgressBar').style.width = '0%';
+                document.getElementById('showProgressBar').textContent = 'N/A';
+                console.warn("No 'Shows' data available or sheet is empty.");
+            }
+        }
+
+        // --- Load Show (formerly loaded 'Show Site Orders' automatically) ---
+        async function loadShow(showName) {
+            await fetchAndDisplayShowProgress(showName);
+            // REMOVE or COMMENT OUT THE FOLLOWING LINE:
+            // loadData('Show Site Orders'); // <--- REMOVE THIS LINE
+            
+            // Optional: Reset data table display when a show is selected,
+            // prompting the user to click a data button.
+            document.getElementById('dataTableContainer').innerHTML = '<p>Select a data type from the navigation buttons on the left.</p>';
+            document.getElementById('currentDataTable').textContent = 'Select Data Type';
+        }
+
+        // --- Chatbot Functionality ---
+        async function sendQuestionToAI() {
+            const questionInput = document.getElementById('questionInput');
+            const question = questionInput.value.trim();
+
+            if (!question) return;
+
+            addMessageToChat(question, 'user');
+            questionInput.value = 'Thinking...';
+            questionInput.disabled = true;
+
+            try {
+                const response = await fetch(CLOUD_RUN_AI_BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                addMessageToChat(data.answer, 'ai');
+
+            } catch (error) {
+                console.error("Error from AI backend:", error);
+                addMessageToChat(`Sorry, I couldn't get an answer. Error: ${error.message}`, 'ai');
+            } finally {
+                questionInput.value = '';
+                questionInput.disabled = false;
+            }
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Optionally load a default show or data on page load
+            loadShow('Coffee Fest'); // Loads Coffee Fest progress and its default data
+        });
+    </script>
+</body>
+</html>
